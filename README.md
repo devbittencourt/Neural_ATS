@@ -1,54 +1,25 @@
-# React + TypeScript + Vite
+# Neural ATS  
+  
+  
+  <img width="1348" height="634" alt="image" src="https://github.com/user-attachments/assets/65a8030e-1bbe-4f25-916d-6553379986f4" />
+  
+<img width="1344" height="542" alt="image" src="https://github.com/user-attachments/assets/c721d0de-8d3a-4b6e-ab59-0d4d7f9e5cfa" />
+  
+<img width="1345" height="597" alt="image" src="https://github.com/user-attachments/assets/00ba68f8-67af-4a38-b4e5-1a131fa4250e" />
+  
+<img width="1342" height="610" alt="image" src="https://github.com/user-attachments/assets/36f366a4-eade-49b9-9eee-b4f36c33142a" />
+  
+<img width="1345" height="627" alt="image" src="https://github.com/user-attachments/assets/a166c39a-9928-427d-b165-6239e59e3517" />
+  
+<img width="1346" height="629" alt="image" src="https://github.com/user-attachments/assets/97d35e27-012d-4329-bb5e-54a974bb8986" />
+  
+<img width="1349" height="630" alt="image" src="https://github.com/user-attachments/assets/ad3fb6e3-8f47-4e27-97e6-bf44682b759c" />
+  
+<img width="1345" height="626" alt="image" src="https://github.com/user-attachments/assets/b8e877fe-3724-482c-8d29-443205c1bcd8" />
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+  
