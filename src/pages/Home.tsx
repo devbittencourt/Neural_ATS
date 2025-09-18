@@ -4,25 +4,12 @@ import PieChart from "../components/PieChart";
 import WordCloud from "../components/WordCloud";
 import ComparativeBarChart from "../components/ComparativeBarChart";
 import SpiderChart from "../components/SpiderChart";
-import { 
-  analyzeText
-} from "../utils/analysisUtils";
+import { analyzeText } from "../utils/analysisUtils";
 import type { AnalysisData } from "../utils/analysisUtils";
-import { generateComparativeBarChartData, generateSpiderChartData } from "../utils/barChartUtils";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import {
+  generateComparativeBarChartData,
+  generateSpiderChartData,
+} from "../utils/barChartUtils";
 
 const Home: React.FC = () => {
   const [jobDescription, setJobDescription] = useState("");
@@ -37,7 +24,8 @@ const Home: React.FC = () => {
   // Efeito para texto glitch cyberpunk
   useEffect(() => {
     const glitchInterval = setInterval(() => {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+      const chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
       let result = "";
       for (let i = 0; i < 3; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -53,17 +41,21 @@ const Home: React.FC = () => {
     if (analysisData && analysisData.keywordMatches) {
       // Por padrão, selecionar todas as keywords que aparecem no currículo e não foram removidas
       const keywordsWithResumeCount = analysisData.keywordMatches
-        .filter(item => item.resumeCount > 0 && !removedKeywords.includes(item.keyword.toLowerCase()))
-        .map(item => item.keyword);
+        .filter(
+          (item) =>
+            item.resumeCount > 0 &&
+            !removedKeywords.includes(item.keyword.toLowerCase())
+        )
+        .map((item) => item.keyword);
       setSelectedKeywords(keywordsWithResumeCount);
     }
   }, [analysisData, removedKeywords]);
 
   // Função para alternar seleção de keyword
   const toggleKeywordSelection = (keyword: string) => {
-    setSelectedKeywords(prev => {
+    setSelectedKeywords((prev) => {
       if (prev.includes(keyword)) {
-        return prev.filter(k => k !== keyword);
+        return prev.filter((k) => k !== keyword);
       } else {
         return [...prev, keyword];
       }
@@ -73,13 +65,15 @@ const Home: React.FC = () => {
   // Função para selecionar/deselecionar todas as keywords
   const toggleAllKeywords = () => {
     if (!analysisData) return;
-    
+
     // Considera todas as palavras visíveis (primeiras 50), igual à renderização
     const availableKeywords = analysisData.keywordMatches
-      .filter(keyword => !removedKeywords.includes(keyword.keyword.toLowerCase()))
+      .filter(
+        (keyword) => !removedKeywords.includes(keyword.keyword.toLowerCase())
+      )
       .slice(0, 50)
-      .map(item => item.keyword);
-    
+      .map((item) => item.keyword);
+
     if (selectedKeywords.length === availableKeywords.length) {
       setSelectedKeywords([]);
     } else {
@@ -93,39 +87,46 @@ const Home: React.FC = () => {
     if (!removedKeywords.includes(keywordLower)) {
       const newRemovedKeywords = [...removedKeywords, keywordLower];
       setRemovedKeywords(newRemovedKeywords);
-      
+
       // Também remover da seleção de gráficos se estiver selecionada
-      setSelectedKeywords(prev => prev.filter(k => k.toLowerCase() !== keywordLower));
-      
+      setSelectedKeywords((prev) =>
+        prev.filter((k) => k.toLowerCase() !== keywordLower)
+      );
+
       // Recalcular análise sem a keyword removida
       if (analysisData) {
         // Recalcular keywordMatches sem as keywords removidas
         const analysis = analyzeText(jobDescription, resume);
         const filteredMatches = analysis.keywordMatches.filter(
-          item => !newRemovedKeywords.includes(item.keyword.toLowerCase())
+          (item) => !newRemovedKeywords.includes(item.keyword.toLowerCase())
         );
-        
+
         // Filtrar jobKeywords também
         const updatedJobKeywords = analysis.jobKeywords.filter(
-          kw => !newRemovedKeywords.includes(kw.keyword.toLowerCase())
+          (kw) => !newRemovedKeywords.includes(kw.keyword.toLowerCase())
         );
-        
+
         const updatedAnalysisData = {
           ...analysisData,
           jobKeywords: updatedJobKeywords,
           keywordMatches: filteredMatches,
           missingKeywords: filteredMatches
-            .filter(item => item.jobCount > 0 && item.resumeCount === 0)
-            .map(item => item.keyword)
+            .filter((item) => item.jobCount > 0 && item.resumeCount === 0)
+            .map((item) => item.keyword),
         };
-        
+
         setAnalysisData(updatedAnalysisData);
-        
+
         // Recalcular match score
-        const matchedKeywords = filteredMatches.filter(item => item.match).length;
+        const matchedKeywords = filteredMatches.filter(
+          (item) => item.match
+        ).length;
         const totalKeywords = filteredMatches.length;
-        const newMatchScore = totalKeywords > 0 ? Math.round((matchedKeywords / totalKeywords) * 100) : 0;
-        
+        const newMatchScore =
+          totalKeywords > 0
+            ? Math.round((matchedKeywords / totalKeywords) * 100)
+            : 0;
+
         setMatchScore(newMatchScore);
       }
     }
@@ -133,24 +134,29 @@ const Home: React.FC = () => {
 
   const handleAnalyze = () => {
     if (!jobDescription || !resume) return;
-    
+
     setIsAnalyzing(true);
     setMatchScore(null);
     setAnalysisData(null);
     setRemovedKeywords([]); // Reset keywords removidas ao fazer nova análise
     setSelectedKeywords([]); // Reset keywords selecionadas ao fazer nova análise
-    
+
     // Simulação de análise ATS
     setTimeout(() => {
       const analysis = analyzeText(jobDescription, resume);
-      
+
       // Cálculo real do matchScore baseado na proporção de palavras-chave
-      const matchedKeywords = analysis.keywordMatches.filter(item => item.match).length;
+      const matchedKeywords = analysis.keywordMatches.filter(
+        (item) => item.match
+      ).length;
       const totalKeywords = analysis.keywordMatches.length;
-      
+
       // Tratamento de divisão por zero
-      const score = totalKeywords === 0 ? 0 : Math.round((matchedKeywords / totalKeywords) * 100);
-      
+      const score =
+        totalKeywords === 0
+          ? 0
+          : Math.round((matchedKeywords / totalKeywords) * 100);
+
       setMatchScore(score);
       setAnalysisData(analysis);
       setIsAnalyzing(false);
@@ -163,7 +169,9 @@ const Home: React.FC = () => {
         <h1 className="neon-title glitch-effect" data-text="NEURAL ATS">
           NEURAL ATS <span className="glitch-text">{glitchText}</span>
         </h1>
-        <p className="cyberpunk-subtitle">SISTEMA DE ANÁLISE DE COMPATIBILIDADE V2.0</p>
+        <p className="cyberpunk-subtitle">
+          SISTEMA DE ANÁLISE DE COMPATIBILIDADE V2.0
+        </p>
       </div>
 
       <div className="home-inputs">
@@ -195,96 +203,113 @@ const Home: React.FC = () => {
       </div>
 
       <div className="home-actions">
-        <button 
-          onClick={handleAnalyze} 
-          className={`neon-button ${isAnalyzing ? 'analyzing' : 'neon-pulse'}`}
+        <button
+          onClick={handleAnalyze}
+          className={`neon-button ${isAnalyzing ? "analyzing" : "neon-pulse"}`}
           disabled={isAnalyzing || !jobDescription || !resume}
         >
-          {isAnalyzing ? 'ANALISANDO...' : 'ANALISAR COMPATIBILIDADE'}
+          {isAnalyzing ? "ANALISANDO..." : "ANALISAR COMPATIBILIDADE"}
         </button>
       </div>
 
       {/* Seção de Keywords Extraídas */}
-      {analysisData && analysisData.keywordMatches && analysisData.keywordMatches.length > 0 && (
-        <div className="keywords-manager">
-          <div className="keywords-header">
-            <h3>PALAVRAS-CHAVE EXTRAÍDAS</h3>
-            <p>Clique nas palavras para removê-las da análise</p>
-          </div>
-          
-          {/* Controles de seleção para gráficos */}
-          <div className="keywords-controls">
-            <h4>Seleção para Gráficos:</h4>
-            <button 
-              className="toggle-all-btn"
-              onClick={toggleAllKeywords}
-            >
-              {selectedKeywords.length === analysisData.keywordMatches.filter(item => item.resumeCount > 0 && !removedKeywords.includes(item.keyword.toLowerCase())).length 
-                ? 'Desmarcar Todas' 
-                : 'Selecionar Todas'}
-            </button>
-          </div>
-          
-          <div className="keywords-section">
-            <div className="available-keywords">
-              {analysisData.keywordMatches
-                .filter(keyword => !removedKeywords.includes(keyword.keyword.toLowerCase()))
-                .slice(0, 50)
-                .map((keyword, index) => (
-                  <div 
-                    key={index} 
-                    className={`keyword-item available ${selectedKeywords.includes(keyword.keyword) ? 'selected-for-chart' : ''}`}
-                    title="Clique para remover esta palavra da análise"
-                  >
-                    {/* Checkbox para seleção nos gráficos */}
-                    <input 
-                      type="checkbox" 
-                      checked={selectedKeywords.includes(keyword.keyword)}
-                      onChange={() => toggleKeywordSelection(keyword.keyword)}
-                      onClick={(e) => e.stopPropagation()}
-                      title="Incluir/excluir dos gráficos"
-                    />
-                    
-                    {/* Palavra-chave clicável para remoção */}
-                    <span 
-                      className="keyword-text"
-                      onClick={() => handleRemoveKeyword(keyword.keyword)}
-                    >
-                      {keyword.keyword}
-                    </span>
-                    
-                    <span className="frequency">
-                      ({keyword.resumeCount > 0 ? `${keyword.resumeCount}/` : ''}{keyword.jobCount})
-                    </span>
-                  </div>
-                ))}
+      {analysisData &&
+        analysisData.keywordMatches &&
+        analysisData.keywordMatches.length > 0 && (
+          <div className="keywords-manager">
+            <div className="keywords-header">
+              <h3>PALAVRAS-CHAVE EXTRAÍDAS</h3>
+              <p>Clique nas palavras para removê-las da análise</p>
             </div>
-            
-            {/* Seção de keywords removidas */}
-            {removedKeywords.length > 0 && (
-              <div className="removed-keywords">
-                <h4>Palavras removidas da análise:</h4>
-                <div className="removed-keywords-list">
-                  {removedKeywords.map((keyword, index) => (
-                    <div key={index} className="keyword-item removed">
-                      <span>{keyword}</span>
-                      <button 
-                        className="restore-btn"
-                        onClick={() => {
-                          setRemovedKeywords(prev => prev.filter(k => k !== keyword));
-                        }}
-                        title="Restaurar palavra-chave"
+
+            {/* Controles de seleção para gráficos */}
+            <div className="keywords-controls">
+              <h4>Seleção para Gráficos:</h4>
+              <button className="toggle-all-btn" onClick={toggleAllKeywords}>
+                {selectedKeywords.length ===
+                analysisData.keywordMatches.filter(
+                  (item) =>
+                    item.resumeCount > 0 &&
+                    !removedKeywords.includes(item.keyword.toLowerCase())
+                ).length
+                  ? "Desmarcar Todas"
+                  : "Selecionar Todas"}
+              </button>
+            </div>
+
+            <div className="keywords-section">
+              <div className="available-keywords">
+                {analysisData.keywordMatches
+                  .filter(
+                    (keyword) =>
+                      !removedKeywords.includes(keyword.keyword.toLowerCase())
+                  )
+                  .slice(0, 50)
+                  .map((keyword, index) => (
+                    <div
+                      key={index}
+                      className={`keyword-item available ${
+                        selectedKeywords.includes(keyword.keyword)
+                          ? "selected-for-chart"
+                          : ""
+                      }`}
+                      title="Clique para remover esta palavra da análise"
+                    >
+                      {/* Checkbox para seleção nos gráficos */}
+                      <input
+                        type="checkbox"
+                        checked={selectedKeywords.includes(keyword.keyword)}
+                        onChange={() => toggleKeywordSelection(keyword.keyword)}
+                        onClick={(e) => e.stopPropagation()}
+                        title="Incluir/excluir dos gráficos"
+                      />
+
+                      {/* Palavra-chave clicável para remoção */}
+                      <span
+                        className="keyword-text"
+                        onClick={() => handleRemoveKeyword(keyword.keyword)}
                       >
-                        ↶
-                      </button>
+                        {keyword.keyword}
+                      </span>
+
+                      <span className="frequency">
+                        (
+                        {keyword.resumeCount > 0
+                          ? `${keyword.resumeCount}/`
+                          : ""}
+                        {keyword.jobCount})
+                      </span>
                     </div>
                   ))}
-                </div>
               </div>
-            )}
+
+              {/* Seção de keywords removidas */}
+              {removedKeywords.length > 0 && (
+                <div className="removed-keywords">
+                  <h4>Palavras removidas da análise:</h4>
+                  <div className="removed-keywords-list">
+                    {removedKeywords.map((keyword, index) => (
+                      <div key={index} className="keyword-item removed">
+                        <span>{keyword}</span>
+                        <button
+                          className="restore-btn"
+                          onClick={() => {
+                            setRemovedKeywords((prev) =>
+                              prev.filter((k) => k !== keyword)
+                            );
+                          }}
+                          title="Restaurar palavra-chave"
+                        >
+                          ↶
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       <div className="home-results cyberpunk-results">
         {isAnalyzing && (
@@ -293,7 +318,7 @@ const Home: React.FC = () => {
             <p>Processando dados neurais...</p>
           </div>
         )}
-        
+
         {matchScore !== null && (
           <div className="analysis-container">
             {/* Score Principal */}
@@ -304,11 +329,15 @@ const Home: React.FC = () => {
               <div className="score-label">COMPATIBILIDADE</div>
               <div className="score-message">
                 {matchScore >= 80 ? (
-                  <span className="high-match">ALTA COMPATIBILIDADE DETECTADA</span>
+                  <span className="high-match">
+                    ALTA COMPATIBILIDADE DETECTADA
+                  </span>
                 ) : matchScore >= 50 ? (
                   <span className="medium-match">COMPATIBILIDADE MODERADA</span>
                 ) : (
-                  <span className="low-match">BAIXA COMPATIBILIDADE - OTIMIZAÇÃO RECOMENDADA</span>
+                  <span className="low-match">
+                    BAIXA COMPATIBILIDADE - OTIMIZAÇÃO RECOMENDADA
+                  </span>
                 )}
               </div>
             </div>
@@ -317,39 +346,26 @@ const Home: React.FC = () => {
             {analysisData && (
               <div className="detailed-analysis">
                 {/* Estatísticas Gerais */}
-                 <div className="analysis-section">
-                   <h3 className="analysis-title">ESTATÍSTICAS GERAIS</h3>
-                   <div className="stats-grid">
-                     <div className="stat-card">
-                       <div className="stat-value">{analysisData.overallStats.matchedWords}</div>
-                       <div className="stat-label">Palavras Correspondentes</div>
-                     </div>
-                     <div className="stat-card">
-                       <div className="stat-value">{analysisData.overallStats.jobWords}</div>
-                       <div className="stat-label">Palavras na Vaga</div>
-                     </div>
-                     <div className="stat-card">
-                       <div className="stat-value">{analysisData.overallStats.resumeWords}</div>
-                       <div className="stat-label">Palavras no Currículo</div>
-                     </div>
-                   </div>
-                 </div>
-
-                {/* Estatísticas Gerais */}
                 <div className="analysis-section">
                   <h3 className="analysis-title">ESTATÍSTICAS GERAIS</h3>
                   <div className="stats-grid">
-                    <div className="stat-item">
-                      <span className="stat-label">Palavras na Vaga</span>
-                      <span className="stat-value">{analysisData.overallStats.jobWords}</span>
+                    <div className="stat-card">
+                      <div className="stat-value">
+                        {analysisData.overallStats.matchedWords}
+                      </div>
+                      <div className="stat-label">Palavras Correspondentes</div>
                     </div>
-                    <div className="stat-item">
-                      <span className="stat-label">Palavras no CV</span>
-                      <span className="stat-value">{analysisData.overallStats.resumeWords}</span>
+                    <div className="stat-card">
+                      <div className="stat-value">
+                        {analysisData.overallStats.jobWords}
+                      </div>
+                      <div className="stat-label">Palavras na Vaga</div>
                     </div>
-                    <div className="stat-item">
-                      <span className="stat-label">Palavras Compatíveis</span>
-                      <span className="stat-value">{analysisData.overallStats.matchedWords}</span>
+                    <div className="stat-card">
+                      <div className="stat-value">
+                        {analysisData.overallStats.resumeWords}
+                      </div>
+                      <div className="stat-label">Palavras no Currículo</div>
                     </div>
                   </div>
                 </div>
@@ -359,14 +375,29 @@ const Home: React.FC = () => {
                   <h3 className="analysis-title">PALAVRAS-CHAVE ANALISADAS</h3>
                   <div className="keywords-grid">
                     {analysisData.keywordMatches.map((item, index) => (
-                      <div key={index} className={`keyword-item ${item.match ? 'matched' : 'unmatched'}`}>
-                        <div className="keyword-name">{item.keyword.toUpperCase()}</div>
-                        <div className="keyword-stats">
-                          <span className="keyword-count vaga">Vaga: {item.jobCount}</span>
-                          <span className="keyword-count resume">CV: {item.resumeCount}</span>
+                      <div
+                        key={index}
+                        className={`keyword-item ${
+                          item.match ? "matched" : "unmatched"
+                        }`}
+                      >
+                        <div className="keyword-name">
+                          {item.keyword.toUpperCase()}
                         </div>
-                        <div className={`match-indicator ${item.match ? 'match' : 'no-match'}`}>
-                          {item.match ? '✓' : '✗'}
+                        <div className="keyword-stats">
+                          <span className="keyword-count vaga">
+                            Vaga: {item.jobCount}
+                          </span>
+                          <span className="keyword-count resume">
+                            CV: {item.resumeCount}
+                          </span>
+                        </div>
+                        <div
+                          className={`match-indicator ${
+                            item.match ? "match" : "no-match"
+                          }`}
+                        >
+                          {item.match ? "✓" : "✗"}
                         </div>
                       </div>
                     ))}
@@ -379,7 +410,8 @@ const Home: React.FC = () => {
                     <h3 className="analysis-title">PALAVRAS-CHAVE AUSENTES</h3>
                     <div className="missing-keywords">
                       <p className="missing-description">
-                        Estas palavras-chave estão presentes na vaga mas ausentes no currículo:
+                        Estas palavras-chave estão presentes na vaga mas
+                        ausentes no currículo:
                       </p>
                       <div className="missing-tags">
                         {analysisData.missingKeywords.map((keyword, index) => (
@@ -389,45 +421,55 @@ const Home: React.FC = () => {
                         ))}
                       </div>
                       <div className="recommendation">
-                        <strong>RECOMENDAÇÃO:</strong> Considere adicionar essas competências ao currículo se aplicável.
+                        <strong>RECOMENDAÇÃO:</strong> Considere adicionar essas
+                        competências ao currículo se aplicável.
                       </div>
                     </div>
                   </div>
                 )}
 
                 {/* Análise Comparativa */}
-                 <div className="analysis-section">
-                   <h3 className="analysis-title">ANÁLISE COMPARATIVA</h3>
-                   <div className="comparison-chart">
-                     <div className="comparison-item">
-                       <div className="comparison-label">Taxa de Correspondência</div>
-                       <div className="comparison-bar">
-                         <div 
-                           className="comparison-fill match-rate" 
-                           style={{ width: `${matchScore}%` }}
-                         ></div>
-                       </div>
-                       <div className="comparison-value">{matchScore}%</div>
-                     </div>
-                     <div className="comparison-item">
-                       <div className="comparison-label">Cobertura de Requisitos</div>
-                       <div className="comparison-bar">
-                         <div 
-                           className="comparison-fill coverage-rate" 
-                           style={{ width: `${matchScore}%` }}
-                         ></div>
-                       </div>
-                       <div className="comparison-value">{matchScore}%</div>
-                     </div>
-                   </div>
-                 </div>
+                <div className="analysis-section">
+                  <h3 className="analysis-title">ANÁLISE COMPARATIVA</h3>
+                  <div className="comparison-chart">
+                    <div className="comparison-item">
+                      <div className="comparison-label">
+                        Taxa de Correspondência
+                      </div>
+                      <div className="comparison-bar">
+                        <div
+                          className="comparison-fill match-rate"
+                          style={{ width: `${matchScore}%` }}
+                        ></div>
+                      </div>
+                      <div className="comparison-value">{matchScore}%</div>
+                    </div>
+                    <div className="comparison-item">
+                      <div className="comparison-label">
+                        Cobertura de Requisitos
+                      </div>
+                      <div className="comparison-bar">
+                        <div
+                          className="comparison-fill coverage-rate"
+                          style={{ width: `${matchScore}%` }}
+                        ></div>
+                      </div>
+                      <div className="comparison-value">{matchScore}%</div>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Gráfico de Pizza - Keywords Match */}
                 <div className="analysis-section">
-                  <h3 className="analysis-title">DISTRIBUIÇÃO DE PALAVRAS-CHAVE</h3>
+                  <h3 className="analysis-title">
+                    DISTRIBUIÇÃO DE PALAVRAS-CHAVE
+                  </h3>
                   <div className="chart-container">
-                    <PieChart 
-                      present={analysisData.keywordMatches.filter(k => k.match).length}
+                    <PieChart
+                      present={
+                        analysisData.keywordMatches.filter((k) => k.match)
+                          .length
+                      }
                       absent={analysisData.missingKeywords.length}
                     />
                   </div>
@@ -435,17 +477,30 @@ const Home: React.FC = () => {
 
                 {/* Gráfico Comparativo de Keywords */}
                 <div className="analysis-section">
-                  <h3 className="analysis-title">COMPARAÇÃO VAGA vs CURRÍCULO</h3>
+                  <h3 className="analysis-title">
+                    COMPARAÇÃO VAGA vs CURRÍCULO
+                  </h3>
                   <div className="comparative-chart-container">
-                    <ComparativeBarChart data={generateComparativeBarChartData(analysisData, selectedKeywords)} />
+                    <ComparativeBarChart
+                      data={generateComparativeBarChartData(
+                        analysisData,
+                        selectedKeywords
+                      )}
+                    />
                   </div>
                   <div className="chart-legend">
                     <div className="legend-item">
-                      <span className="legend-color" style={{backgroundColor: '#00ffff'}}></span>
+                      <span
+                        className="legend-color"
+                        style={{ backgroundColor: "#00ffff" }}
+                      ></span>
                       <span>Frequência na Vaga</span>
                     </div>
                     <div className="legend-item">
-                      <span className="legend-color" style={{backgroundColor: '#008888'}}></span>
+                      <span
+                        className="legend-color"
+                        style={{ backgroundColor: "#008888" }}
+                      ></span>
                       <span>Frequência no Currículo</span>
                     </div>
                     <div className="legend-note">
@@ -458,19 +513,31 @@ const Home: React.FC = () => {
                 <div className="analysis-section">
                   <h3 className="analysis-title">RADAR COMPARATIVO - SKILLS</h3>
                   <div className="spider-chart-container">
-                    <SpiderChart data={generateSpiderChartData(analysisData, selectedKeywords)} />
+                    <SpiderChart
+                      data={generateSpiderChartData(
+                        analysisData,
+                        selectedKeywords
+                      )}
+                    />
                   </div>
                   <div className="chart-legend">
                     <div className="legend-item">
-                      <span className="legend-color" style={{backgroundColor: '#00ffff'}}></span>
+                      <span
+                        className="legend-color"
+                        style={{ backgroundColor: "#00ffff" }}
+                      ></span>
                       <span>Perfil da Vaga</span>
                     </div>
                     <div className="legend-item">
-                      <span className="legend-color" style={{backgroundColor: '#008888'}}></span>
+                      <span
+                        className="legend-color"
+                        style={{ backgroundColor: "#008888" }}
+                      ></span>
                       <span>Perfil do Currículo</span>
                     </div>
                     <div className="legend-note">
-                      Radar mostra a intensidade de cada skill | ✓ = Match | ✗ = Gap
+                      Radar mostra a intensidade de cada skill | ✓ = Match | ✗ =
+                      Gap
                     </div>
                   </div>
                 </div>
@@ -486,12 +553,14 @@ const Home: React.FC = () => {
             )}
           </div>
         )}
-        
+
         {!isAnalyzing && matchScore === null && (
-          <p className="cyber-instruction">Insira os dados e clique em ANALISAR para iniciar o processo</p>
+          <p className="cyber-instruction">
+            Insira os dados e clique em ANALISAR para iniciar o processo
+          </p>
         )}
       </div>
-      
+
       <div className="cyber-footer">
         <div className="cyber-line"></div>
         <p>NEURAL ATS &copy; 2077 • TODOS OS DIREITOS RESERVADOS</p>
