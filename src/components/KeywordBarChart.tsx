@@ -60,7 +60,7 @@ const KeywordBarChart: React.FC<KeywordBarChartProps> = ({ data }) => {
                 fontSize="10"
                 opacity="0.8"
               >
-                {value}%
+                {Math.round(value)}%
               </text>
             </g>
           );
@@ -106,7 +106,7 @@ const KeywordBarChart: React.FC<KeywordBarChartProps> = ({ data }) => {
                 fontWeight="bold"
                 style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
               >
-                {item.value}%
+                {Math.round(item.value)}%
               </text>
 
               {/* Label da keyword (rotacionado) */}

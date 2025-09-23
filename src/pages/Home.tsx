@@ -320,48 +320,46 @@ const Home: React.FC = () => {
         )}
 
         {matchScore !== null && (
-          <div className="analysis-container">
-            {/* Score Principal */}
-            <div className="score-container">
-              <div className="cyber-score-ring">
-                <div className="score-value">{matchScore}%</div>
-              </div>
-              <div className="score-label">COMPATIBILIDADE</div>
-              <div className="score-message">
-                {matchScore >= 80 ? (
-                  <span className="high-match">
-                    ALTA COMPATIBILIDADE DETECTADA
-                  </span>
-                ) : matchScore >= 50 ? (
-                  <span className="medium-match">COMPATIBILIDADE MODERADA</span>
-                ) : (
-                  <span className="low-match">
-                    BAIXA COMPATIBILIDADE - OTIMIZAÇÃO RECOMENDADA
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Análises Detalhadas */}
-            {analysisData && (
-              <div className="detailed-analysis">
-                {/* Estatísticas Gerais */}
-                <div className="analysis-section">
-                  <h3 className="analysis-title">ESTATÍSTICAS GERAIS</h3>
-                  <div className="stats-grid">
-                    <div className="stat-card">
+          <div className="dashboard-container">
+            {/* Dashboard Header com Score Principal */}
+            <div className="dashboard-header">
+              {/* Estatísticas Gerais no Header */}
+              {analysisData && (
+                <div className="stats-dashboard-cards">
+                  <div className="stat-dashboard-card">
+                    <div className="stat-icon">📊</div>
+                    <div className="stat-content">
+                      <div className="stat-value">{matchScore}%</div>
+                      <div className="stat-label">Compatibilidade</div>
+                      <div className="compatibility-progress-bar">
+                        <div 
+                          className="compatibility-progress-fill" 
+                          style={{ width: `${matchScore}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="stat-dashboard-card">
+                    <div className="stat-icon">🎯</div>
+                    <div className="stat-content">
                       <div className="stat-value">
                         {analysisData.overallStats.matchedWords}
                       </div>
                       <div className="stat-label">Palavras Correspondentes</div>
                     </div>
-                    <div className="stat-card">
+                  </div>
+                  <div className="stat-dashboard-card">
+                    <div className="stat-icon">📋</div>
+                    <div className="stat-content">
                       <div className="stat-value">
                         {analysisData.overallStats.jobWords}
                       </div>
                       <div className="stat-label">Palavras na Vaga</div>
                     </div>
-                    <div className="stat-card">
+                  </div>
+                  <div className="stat-dashboard-card">
+                    <div className="stat-icon">📄</div>
+                    <div className="stat-content">
                       <div className="stat-value">
                         {analysisData.overallStats.resumeWords}
                       </div>
@@ -369,46 +367,156 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                 </div>
+              )}
+            </div>
 
-                {/* Palavras-chave Encontradas */}
-                <div className="analysis-section">
-                  <h3 className="analysis-title">PALAVRAS-CHAVE ANALISADAS</h3>
-                  <div className="keywords-grid">
-                    {analysisData.keywordMatches.map((item, index) => (
-                      <div
-                        key={index}
-                        className={`keyword-item ${
-                          item.match ? "matched" : "unmatched"
-                        }`}
-                      >
-                        <div className="keyword-name">
-                          {item.keyword.toUpperCase()}
+            {/* Dashboard Grid com Novo Layout */}
+            {analysisData && (
+              <div className="dashboard-grid new-layout">
+                {/* Lado Esquerdo: Card de Barras com Rosca e Spider abaixo (60%) */}
+                <div className="dashboard-card chart-card left-section">
+                  {/* Gráfico de Barras */}
+                  <div className="card-header">
+                    <h3 className="card-title">
+                      <span className="card-icon">📈</span>
+                      COMPARAÇÃO VAGA vs CURRÍCULO
+                    </h3>
+                  </div>
+                  <div className="card-content">
+                    <div className="comparative-chart-container">
+                      <ComparativeBarChart
+                        data={generateComparativeBarChartData(
+                          analysisData,
+                          selectedKeywords
+                        )}
+                      />
+                    </div>
+                    <div className="chart-legend">
+                      <div className="legend-item">
+                        <span
+                          className="legend-color"
+                          style={{ backgroundColor: "#00ffff" }}
+                        ></span>
+                        <span>Frequência na Vaga</span>
+                      </div>
+                      <div className="legend-item">
+                        <span
+                          className="legend-color"
+                          style={{ backgroundColor: "#008888" }}
+                        ></span>
+                        <span>Frequência no Currículo</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rosca e Spider abaixo das barras */}
+                  <div className="combined-charts-container">
+                    {/* Pie Chart */}
+                    <div className="chart-section">
+                      <div className="card-header">
+                        <h3 className="card-title">
+                          <span className="card-icon">📊</span>
+                          % MATCH
+                        </h3>
+                      </div>
+                      <div className="card-content">
+                        <div className="chart-container">
+                          <PieChart
+                            present={
+                              analysisData.keywordMatches.filter((k) => k.match)
+                                .length
+                            }
+                            absent={analysisData.missingKeywords.length}
+                          />
                         </div>
-                        <div className="keyword-stats">
-                          <span className="keyword-count vaga">
-                            Vaga: {item.jobCount}
-                          </span>
-                          <span className="keyword-count resume">
-                            CV: {item.resumeCount}
-                          </span>
-                        </div>
-                        <div
-                          className={`match-indicator ${
-                            item.match ? "match" : "no-match"
-                          }`}
-                        >
-                          {item.match ? "✓" : "✗"}
+                        <div className="chart-legend">
+                          <div className="legend-item">
+                            <span
+                              className="legend-color"
+                              style={{ backgroundColor: "#00ff00" }}
+                            ></span>
+                            <span>Presentes ({analysisData.keywordMatches.filter((k) => k.match).length})</span>
+                          </div>
+                          <div className="legend-item">
+                            <span
+                              className="legend-color"
+                              style={{ backgroundColor: "#ff0000" }}
+                            ></span>
+                            <span>Ausentes ({analysisData.missingKeywords.length})</span>
+                          </div>
                         </div>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Spider Chart */}
+                    <div className="chart-section">
+                      <div className="card-header">
+                        <h3 className="card-title">
+                          <span className="card-icon">🎯</span>
+                          RADAR COMPARATIVO
+                        </h3>
+                      </div>
+                      <div className="card-content">
+                        <div className="spider-chart-container">
+                          <SpiderChart
+                            data={generateSpiderChartData(
+                              analysisData,
+                              selectedKeywords
+                            )}
+                          />
+                        </div>
+                        <div className="chart-legend">
+                          <div className="legend-item">
+                            <span
+                              className="legend-color"
+                              style={{ backgroundColor: "#00ffff" }}
+                            ></span>
+                            <span>Vaga</span>
+                          </div>
+                          <div className="legend-item">
+                            <span
+                              className="legend-color"
+                              style={{ backgroundColor: "#008888" }}
+                            ></span>
+                            <span>Currículo</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Palavras que Não Dão Match */}
+                {/* Lado Direito: Nuvem de Palavras (40%) */}
+                <div className="dashboard-card chart-card right-section">
+                  <div className="card-header">
+                    <h3 className="card-title">
+                      <span className="card-icon">☁️</span>
+                      NUVEM DE PALAVRAS
+                    </h3>
+                  </div>
+                  <div className="card-content">
+                    <div className="word-cloud-container">
+                      <WordCloud keywords={analysisData.keywordMatches} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Dashboard Grid com Cards Informativos */}
+            {analysisData && (
+              <div className="dashboard-grid">
+
+                {/* Card: Palavras-chave Ausentes */}
                 {analysisData.missingKeywords.length > 0 && (
-                  <div className="analysis-section">
-                    <h3 className="analysis-title">PALAVRAS-CHAVE AUSENTES</h3>
-                    <div className="missing-keywords">
+                  <div className="dashboard-card info-card large-card">
+                    <div className="card-header">
+                      <h3 className="card-title">
+                        <span className="card-icon">⚠️</span>
+                        PALAVRAS-CHAVE AUSENTES
+                      </h3>
+                    </div>
+                    <div className="card-content">
                       <p className="missing-description">
                         Estas palavras-chave estão presentes na vaga mas
                         ausentes no currículo:
@@ -421,132 +529,51 @@ const Home: React.FC = () => {
                         ))}
                       </div>
                       <div className="recommendation">
-                        <strong>RECOMENDAÇÃO:</strong> Considere adicionar essas
+                        <strong>💡 RECOMENDAÇÃO:</strong> Considere adicionar essas
                         competências ao currículo se aplicável.
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Análise Comparativa */}
-                <div className="analysis-section">
-                  <h3 className="analysis-title">ANÁLISE COMPARATIVA</h3>
-                  <div className="comparison-chart">
-                    <div className="comparison-item">
-                      <div className="comparison-label">
-                        Taxa de Correspondência
-                      </div>
-                      <div className="comparison-bar">
+                {/* Card: Análise Detalhada de Keywords */}
+                <div className="dashboard-card info-card full-width">
+                  <div className="card-header">
+                    <h3 className="card-title">
+                      <span className="card-icon">🔍</span>
+                      ANÁLISE DETALHADA DE PALAVRAS-CHAVE
+                    </h3>
+                  </div>
+                  <div className="card-content">
+                    <div className="keywords-detailed-grid">
+                      {analysisData.keywordMatches.slice(0, 20).map((item, index) => (
                         <div
-                          className="comparison-fill match-rate"
-                          style={{ width: `${matchScore}%` }}
-                        ></div>
-                      </div>
-                      <div className="comparison-value">{matchScore}%</div>
+                          key={index}
+                          className={`keyword-detail-item ${
+                            item.match ? "matched" : "unmatched"
+                          }`}
+                        >
+                          <div className="keyword-name">
+                            {item.keyword.toUpperCase()}
+                          </div>
+                          <div className="keyword-stats">
+                            <span className="keyword-count vaga">
+                              Vaga: {item.jobCount}
+                            </span>
+                            <span className="keyword-count resume">
+                              CV: {item.resumeCount}
+                            </span>
+                          </div>
+                          <div
+                            className={`match-indicator ${
+                              item.match ? "match" : "no-match"
+                            }`}
+                          >
+                            {item.match ? "✓" : "✗"}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="comparison-item">
-                      <div className="comparison-label">
-                        Cobertura de Requisitos
-                      </div>
-                      <div className="comparison-bar">
-                        <div
-                          className="comparison-fill coverage-rate"
-                          style={{ width: `${matchScore}%` }}
-                        ></div>
-                      </div>
-                      <div className="comparison-value">{matchScore}%</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Gráfico de Pizza - Keywords Match */}
-                <div className="analysis-section">
-                  <h3 className="analysis-title">
-                    DISTRIBUIÇÃO DE PALAVRAS-CHAVE
-                  </h3>
-                  <div className="chart-container">
-                    <PieChart
-                      present={
-                        analysisData.keywordMatches.filter((k) => k.match)
-                          .length
-                      }
-                      absent={analysisData.missingKeywords.length}
-                    />
-                  </div>
-                </div>
-
-                {/* Gráfico Comparativo de Keywords */}
-                <div className="analysis-section">
-                  <h3 className="analysis-title">
-                    COMPARAÇÃO VAGA vs CURRÍCULO
-                  </h3>
-                  <div className="comparative-chart-container">
-                    <ComparativeBarChart
-                      data={generateComparativeBarChartData(
-                        analysisData,
-                        selectedKeywords
-                      )}
-                    />
-                  </div>
-                  <div className="chart-legend">
-                    <div className="legend-item">
-                      <span
-                        className="legend-color"
-                        style={{ backgroundColor: "#00ffff" }}
-                      ></span>
-                      <span>Frequência na Vaga</span>
-                    </div>
-                    <div className="legend-item">
-                      <span
-                        className="legend-color"
-                        style={{ backgroundColor: "#008888" }}
-                      ></span>
-                      <span>Frequência no Currículo</span>
-                    </div>
-                    <div className="legend-note">
-                      ✓ = Match encontrado | ✗ = Palavra ausente no currículo
-                    </div>
-                  </div>
-                </div>
-
-                {/* Gráfico Spider/Radar Comparativo */}
-                <div className="analysis-section">
-                  <h3 className="analysis-title">RADAR COMPARATIVO - SKILLS</h3>
-                  <div className="spider-chart-container">
-                    <SpiderChart
-                      data={generateSpiderChartData(
-                        analysisData,
-                        selectedKeywords
-                      )}
-                    />
-                  </div>
-                  <div className="chart-legend">
-                    <div className="legend-item">
-                      <span
-                        className="legend-color"
-                        style={{ backgroundColor: "#00ffff" }}
-                      ></span>
-                      <span>Perfil da Vaga</span>
-                    </div>
-                    <div className="legend-item">
-                      <span
-                        className="legend-color"
-                        style={{ backgroundColor: "#008888" }}
-                      ></span>
-                      <span>Perfil do Currículo</span>
-                    </div>
-                    <div className="legend-note">
-                      Radar mostra a intensidade de cada skill | ✓ = Match | ✗ =
-                      Gap
-                    </div>
-                  </div>
-                </div>
-
-                {/* Word Cloud */}
-                <div className="analysis-section">
-                  <h3 className="analysis-title">NUVEM DE PALAVRAS</h3>
-                  <div className="word-cloud-container">
-                    <WordCloud keywords={analysisData.keywordMatches} />
                   </div>
                 </div>
               </div>

@@ -54,7 +54,7 @@ const ComparativeBarChart: React.FC<ComparativeBarChartProps> = ({ data }) => {
                 fontSize="10"
                 opacity="0.8"
               >
-                {value}%
+                {Math.round(value)}%
               </text>
             </g>
           );
@@ -109,7 +109,7 @@ const ComparativeBarChart: React.FC<ComparativeBarChartProps> = ({ data }) => {
                   fontWeight="bold"
                   style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
                 >
-                  {item.jobValue}%
+                  {Math.round(item.jobValue)}%
                 </text>
               )}
 
@@ -146,7 +146,7 @@ const ComparativeBarChart: React.FC<ComparativeBarChartProps> = ({ data }) => {
                   fontWeight="bold"
                   style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
                 >
-                  {item.resumeValue}%
+                  {Math.round(item.resumeValue)}%
                 </text>
               )}
 

@@ -6,9 +6,9 @@ interface SpiderChartProps {
 }
 
 const SpiderChart: React.FC<SpiderChartProps> = ({ data }) => {
-  const size = 400;
+  const size = 332; // Reduzindo 5% de 350 (350 * 0.95 = 332.5 ≈ 332)
   const center = size / 2;
-  const maxRadius = 150;
+  const maxRadius = 133; // Reduzindo 5% de 140 (140 * 0.95 = 133)
   const levels = 5; // Número de níveis concêntricos (0%, 20%, 40%, 60%, 80%, 100%)
 
   // Calcular pontos para cada skill no círculo

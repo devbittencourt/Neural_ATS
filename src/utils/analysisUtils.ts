@@ -66,7 +66,7 @@ export const extractKeywordsFromJob = (jobText: string): string[] => {
   // Limpar e dividir o texto em palavras
   const words = jobText
     .toLowerCase()
-    .replace(/[^\w\s\-\.]/g, ' ') // Remove pontuação exceto hífens e pontos
+    .replace(/[^\p{L}\p{N}\s\-\.]/gu, ' ') // Remove pontuação exceto hífens e pontos, preservando acentos
     .split(/\s+/)
     .map(word => word.replace(/^\.+|\.+$/g, '')) // Remove pontos apenas do início e fim
     .filter(word => 
@@ -102,7 +102,7 @@ export const getTop10JobKeywords = (jobText: string, removedKeywords: string[] =
   // Limpar e dividir o texto em palavras
   const words = jobText
     .toLowerCase()
-    .replace(/[^\w\s\-\.]/g, ' ') // Remove pontuação exceto hífens e pontos
+    .replace(/[^\p{L}\p{N}\s\-\.]/gu, ' ') // Remove pontuação exceto hífens e pontos, preservando acentos
     .split(/\s+/)
     .map(word => word.replace(/^\.+|\.+$/g, '')) // Remove pontos apenas do início e fim
     .filter(word => 
@@ -140,7 +140,7 @@ export const analyzeText = (jobText: string, resumeText: string): AnalysisData =
   const processText = (text: string): string[] => {
     return text
       .toLowerCase()
-      .replace(/[^\w\s\-\.]/g, ' ') // Remove pontuação exceto hífens e pontos
+      .replace(/[^\p{L}\p{N}\s\-\.]/gu, ' ') // Remove pontuação exceto hífens e pontos, preservando acentos
       .split(/\s+/)
       .map(word => word.replace(/^\.+|\.+$/g, '')) // Remove pontos apenas do início e fim
       .filter(word => 

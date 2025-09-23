@@ -9,7 +9,8 @@ const WordCloud: React.FC<WordCloudProps> = ({ keywords }) => {
     <div className="word-cloud">
       {keywords.map((item, index) => {
         const totalCount = item.jobCount + item.resumeCount;
-        const fontSize = Math.max(12, Math.min(28, totalCount * 3 + 12));
+        const baseFontSize = Math.max(12, Math.min(28, totalCount * 3 + 12));
+        const fontSize = baseFontSize * 0.6; // Reduzindo de 0.75 para 0.6 (20% menor)
         
         return (
           <span 
